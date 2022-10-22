@@ -7,8 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Builder
@@ -20,7 +23,7 @@ public class Member extends Timestamped {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long memberId;
 
   @Column(nullable = false)
   private String nickname;
@@ -28,6 +31,24 @@ public class Member extends Timestamped {
   @Column(nullable = false)
   @JsonIgnore
   private String password;
+
+  @Column(nullable = false)
+  private String phoneNumber;
+
+  @OneToMany(fetch = FetchType.LAZY,
+          mappedBy = "member",
+          cascade = CascadeType.ALL,
+          orphanRemoval = true
+  )
+  private List<Post> posts = new ArrayList<>();
+
+
+  @OneToMany(fetch = FetchType.LAZY,
+          mappedBy = "member",
+          cascade = CascadeType.ALL,
+          orphanRemoval = true
+  )
+  private List<Comment> comments = new ArrayList<>();
 
   @Override
   public boolean equals(Object o) {
@@ -38,7 +59,7 @@ public class Member extends Timestamped {
       return false;
     }
     Member member = (Member) o;
-    return id != null && Objects.equals(id, member.id);
+    return memberId != null && Objects.equals(memberId, member.memberId);
   }
 
   @Override
